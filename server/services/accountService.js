@@ -86,9 +86,32 @@ function deposit(accountId, amount, maxRetries = 3) {
   return { success: false, error: 'Concurrent conflict — please retry' };
 }
 
+/**
+ * Delete an account and all related cards and transactions.
+ * @param {string} accountId
+ * @returns {{ success: boolean, error?: string }}
+ */
+function deleteAccount(accountId) {
+  const db = getDb();
+  const account = getAccountById(accountId);
+  if (!account) {
+    return { success: false, error: 'Account not found' };
+  }
+
+  const deleteAll = db.transaction(() => {
+    db.prepare('DELETE FROM transactions WHERE account_id = ?').run(accountId);
+    db.prepare('DELETE FROM cards WHERE account_id = ?').run(accountId);
+    db.prepare('DELETE FROM accounts WHERE id = ?').run(accountId);
+  });
+
+  deleteAll();
+  return { success: true };
+}
+
 module.exports = {
   createAccount,
   getAllAccounts,
   getAccountById,
   deposit,
+  deleteAccount,
 };

@@ -8,31 +8,11 @@ export default function ConcurrencyDemo({ account, cards, onComplete, toast }) {
 
   const activeCard = (cards || []).find((c) => c.status === 'active');
 
-  if (!account) {
-    return (
-      <div className="glass-card fade-in">
-        <div className="empty-state">
-          <div className="empty-state-icon">⚡</div>
-          <div className="empty-state-text">Select an account first</div>
-          <div className="empty-state-hint">Choose an account from the Accounts tab to test concurrency</div>
-        </div>
-      </div>
-    );
+  if (!account || !activeCard) {
+    return null;
   }
 
-  if (!activeCard) {
-    return (
-      <div className="glass-card fade-in">
-        <div className="empty-state">
-          <div className="empty-state-icon">💳</div>
-          <div className="empty-state-text">No active card</div>
-          <div className="empty-state-hint">Issue a card in the Cards tab first</div>
-        </div>
-      </div>
-    );
-  }
-
-  const handleSimulate = async () => {
+  const handleSubmit = async () => {
     setLoading(true);
     setResults(null);
 
@@ -59,41 +39,35 @@ export default function ConcurrencyDemo({ account, cards, onComplete, toast }) {
       const declined = data.results.filter((r) => !r.success).length;
 
       if (declined > 0) {
-        toast.info(`${approved} approved, ${declined} declined — balance protected!`);
+        toast.info(`${approved} approved, ${declined} declined — insufficient funds`);
       } else {
-        toast.success(`All ${approved} transactions approved`);
+        toast.success(`All ${approved} payments processed successfully`);
       }
 
       onComplete();
     } catch (err) {
-      toast.error('Simulation failed');
+      toast.error('Failed to process batch');
     } finally {
       setLoading(false);
     }
   };
 
-  const expectedMax = Math.floor(account.balance / amountEach);
   const totalRequested = numTransactions * amountEach;
 
   return (
     <div className="glass-card fade-in">
       <div className="glass-card-header">
         <div>
-          <div className="glass-card-title">⚡ Concurrency Simulation</div>
+          <div className="glass-card-title">Batch Payments</div>
           <div className="glass-card-subtitle">
-            Test that concurrent transactions never overdraw the account
+            Process multiple pharmacy transactions at once
           </div>
         </div>
       </div>
 
-      <div className="mb-16">
-        <div className="balance-label">Current Balance</div>
-        <div className="balance-display small">${account.balance.toFixed(2)}</div>
-      </div>
-
       <div className="form-row">
         <div className="form-group">
-          <label className="form-label" htmlFor="numTx">Number of Transactions</label>
+          <label className="form-label" htmlFor="numTx">Number of Payments</label>
           <input
             id="numTx"
             className="form-input"
@@ -127,54 +101,45 @@ export default function ConcurrencyDemo({ account, cards, onComplete, toast }) {
         fontSize: '0.85rem',
         color: 'var(--text-secondary)',
       }}>
-        <div>📊 Total requested: <strong style={{ color: 'var(--text-primary)' }}>${totalRequested.toFixed(2)}</strong></div>
-        <div>📊 Max affordable: <strong style={{ color: 'var(--accent-primary)' }}>{expectedMax} × ${amountEach.toFixed(2)} = ${(expectedMax * amountEach).toFixed(2)}</strong></div>
+        <div>Total: <strong style={{ color: 'var(--text-primary)' }}>{numTransactions} × ${amountEach.toFixed(2)} = ${totalRequested.toFixed(2)}</strong></div>
+        <div>Available balance: <strong style={{ color: 'var(--accent-primary)' }}>${account.balance.toFixed(2)}</strong></div>
         {totalRequested > account.balance && (
-          <div style={{ color: 'var(--warning)', marginTop: '4px' }}>
-            ⚠️ Total exceeds balance — some transactions should be declined
+          <div style={{ color: 'var(--warning)', marginTop: '4px', fontSize: '0.8rem' }}>
+            Exceeds balance — some payments will be declined
           </div>
         )}
       </div>
 
       <button
         className="btn btn-primary btn-full"
-        onClick={handleSimulate}
+        onClick={handleSubmit}
         disabled={loading}
-        id="simulate-concurrent-btn"
+        id="batch-payments-btn"
       >
-        {loading ? <span className="spinner" /> : '⚡'}
-        {loading ? 'Simulating...' : `Fire ${numTransactions} Concurrent Transactions`}
+        {loading ? <span className="spinner" /> : '🧾'}
+        {loading ? 'Processing...' : `Submit ${numTransactions} Payments`}
       </button>
 
       {results && (
         <div className="concurrent-results fade-in">
-          <div className="section-title mt-20">Results</div>
+          <div className="section-title mt-20">Payment Summary</div>
           {results.results.map((r, i) => (
             <div
               key={i}
               className={`concurrent-result-item ${r.success ? 'approved' : 'declined'}`}
             >
               <span>
-                {r.success ? '✅' : '❌'} Transaction #{i + 1} — ${amountEach.toFixed(2)}
+                Pharmacy #{i + 1} — ${amountEach.toFixed(2)}
               </span>
               <span className={`badge ${r.success ? 'badge-success' : 'badge-danger'}`}>
-                {r.success ? 'Approved' : 'Declined'}
+                {r.success ? 'Paid' : 'Declined'}
               </span>
             </div>
           ))}
 
           <div className="concurrent-final-balance">
-            <div className="balance-label">Final Balance</div>
+            <div className="balance-label">Remaining Balance</div>
             <div className="balance-display small">${results.finalBalance.toFixed(2)}</div>
-            {results.finalBalance >= 0 ? (
-              <div style={{ color: 'var(--success)', fontSize: '0.85rem', marginTop: '8px' }}>
-                ✅ Balance is non-negative — concurrency handling is correct!
-              </div>
-            ) : (
-              <div style={{ color: 'var(--danger)', fontSize: '0.85rem', marginTop: '8px' }}>
-                ❌ Balance went negative — concurrency bug detected!
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -1,32 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import VirtualCard from './VirtualCard';
 
-export default function CardManager({ account, onCardIssued, toast }) {
-  const [cards, setCards] = useState([]);
-  const [loading, setLoading] = useState(false);
+export default function CardManager({ account, cards = [], onCardsChanged, toast }) {
   const [issuing, setIssuing] = useState(false);
-
-  useEffect(() => {
-    if (account) {
-      fetchCards();
-    } else {
-      setCards([]);
-    }
-  }, [account]);
-
-  const fetchCards = async () => {
-    if (!account) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/accounts/${account.id}/cards`);
-      const data = await res.json();
-      setCards(data);
-    } catch (err) {
-      toast.error('Failed to load cards');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleIssueCard = async () => {
     setIssuing(true);
@@ -41,8 +17,7 @@ export default function CardManager({ account, onCardIssued, toast }) {
         toast.error(data.error || 'Failed to issue card');
       } else {
         toast.success('Virtual debit card issued!');
-        fetchCards();
-        if (onCardIssued) onCardIssued(data);
+        onCardsChanged();
       }
     } catch (err) {
       toast.error('Network error');
@@ -64,7 +39,7 @@ export default function CardManager({ account, onCardIssued, toast }) {
         toast.error(data.error || 'Failed to update card');
       } else {
         toast.success(`Card ${newStatus}`);
-        fetchCards();
+        onCardsChanged();
       }
     } catch (err) {
       toast.error('Network error');
@@ -107,11 +82,7 @@ export default function CardManager({ account, onCardIssued, toast }) {
         )}
       </div>
 
-      {loading ? (
-        <div className="text-center mt-20">
-          <span className="spinner" />
-        </div>
-      ) : cards.length === 0 ? (
+      {cards.length === 0 ? (
         <div className="empty-state">
           <div className="empty-state-icon">💳</div>
           <div className="empty-state-text">No cards issued</div>

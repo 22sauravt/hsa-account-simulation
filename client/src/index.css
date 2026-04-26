@@ -276,6 +276,17 @@ body::before {
   outline: none;
 }
 
+/* Hide number input spinners */
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.form-input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 .form-input::placeholder {
   color: var(--text-muted);
 }
@@ -309,6 +320,17 @@ body::before {
 .form-hint {
   font-size: 0.75rem;
   color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.form-input-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: var(--danger);
   margin-top: 4px;
 }
 
@@ -607,6 +629,28 @@ body::before {
   font-weight: 600;
   color: var(--accent-primary);
   font-size: 1rem;
+}
+
+.btn-icon-delete {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.btn-icon-delete:hover {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger);
 }
 
 /* ---- Transaction List ---- */

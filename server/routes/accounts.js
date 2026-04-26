@@ -11,6 +11,12 @@ router.post('/', (req, res) => {
       return res.status(400).json({ error: 'firstName, lastName, and email are required' });
     }
 
+    // Basic email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Please provide a valid email address' });
+    }
+
     const account = accountService.createAccount({ firstName, lastName, email });
     res.status(201).json(account);
   } catch (err) {
@@ -65,6 +71,22 @@ router.post('/:id/deposit', (req, res) => {
     res.json(result.account);
   } catch (err) {
     console.error('Error depositing:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/accounts/:id — Delete an account and all related data
+router.delete('/:id', (req, res) => {
+  try {
+    const result = accountService.deleteAccount(req.params.id);
+
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
+    }
+
+    res.json({ success: true, message: 'Account deleted' });
+  } catch (err) {
+    console.error('Error deleting account:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

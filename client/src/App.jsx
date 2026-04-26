@@ -13,7 +13,6 @@ const TABS = [
   { id: 'deposit', label: 'Deposit', icon: '💰' },
   { id: 'cards', label: 'Cards', icon: '💳' },
   { id: 'transactions', label: 'Transactions', icon: '🛒' },
-  { id: 'concurrency', label: 'Concurrency', icon: '⚡' },
 ];
 
 export default function App() {
@@ -50,7 +49,7 @@ export default function App() {
 
   const fetchCards = async (accountId) => {
     try {
-      const res = await fetch(`/api/accounts/${accountId}/cards`);
+      const res = await fetch(`/api/accounts/${accountId || selectedAccount?.id}/cards`);
       const data = await res.json();
       setCards(data);
     } catch (err) {
@@ -58,14 +57,21 @@ export default function App() {
     }
   };
 
+  // Refresh cards globally — called by CardManager after any status change
+  const refreshCards = useCallback(() => {
+    if (selectedAccount) {
+      fetchCards(selectedAccount.id);
+    }
+  }, [selectedAccount]);
+
   const refreshSelected = useCallback(async () => {
     if (selectedAccount) {
       try {
         const res = await fetch(`/api/accounts/${selectedAccount.id}`);
         const data = await res.json();
         setSelectedAccount(data);
-        // Also refresh account list
         fetchAccounts();
+        fetchCards(selectedAccount.id);
         setRefreshKey((k) => k + 1);
       } catch (err) {
         console.error('Failed to refresh account:', err);
@@ -82,16 +88,29 @@ export default function App() {
     setSelectedAccount(account);
   };
 
+  const handleAccountDelete = async (accountId) => {
+    try {
+      const res = await fetch(`/api/accounts/${accountId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to delete account');
+      } else {
+        toast.success('Account deleted');
+        if (selectedAccount?.id === accountId) {
+          setSelectedAccount(null);
+          setCards([]);
+        }
+        fetchAccounts();
+      }
+    } catch (err) {
+      toast.error('Network error');
+    }
+  };
+
   const handleDeposited = (updatedAccount) => {
     setSelectedAccount(updatedAccount);
     fetchAccounts();
     setRefreshKey((k) => k + 1);
-  };
-
-  const handleCardIssued = () => {
-    if (selectedAccount) {
-      fetchCards(selectedAccount.id);
-    }
   };
 
   const handleTransacted = () => {
@@ -111,6 +130,7 @@ export default function App() {
                 accounts={accounts}
                 selectedId={selectedAccount?.id}
                 onSelect={handleAccountSelect}
+                onDelete={handleAccountDelete}
               />
               {selectedAccount && (
                 <div className="glass-card mt-24 fade-in">
@@ -140,6 +160,7 @@ export default function App() {
                 accounts={accounts}
                 selectedId={selectedAccount?.id}
                 onSelect={handleAccountSelect}
+                onDelete={handleAccountDelete}
               />
             </div>
             <div>
@@ -166,12 +187,14 @@ export default function App() {
                 accounts={accounts}
                 selectedId={selectedAccount?.id}
                 onSelect={handleAccountSelect}
+                onDelete={handleAccountDelete}
               />
             </div>
             <div>
               <CardManager
                 account={selectedAccount}
-                onCardIssued={handleCardIssued}
+                cards={cards}
+                onCardsChanged={refreshCards}
                 toast={toast}
               />
             </div>
@@ -186,6 +209,7 @@ export default function App() {
                 accounts={accounts}
                 selectedId={selectedAccount?.id}
                 onSelect={handleAccountSelect}
+                onDelete={handleAccountDelete}
               />
             </div>
             <div>
@@ -196,32 +220,19 @@ export default function App() {
                 toast={toast}
               />
               <div className="mt-24">
+                <ConcurrencyDemo
+                  account={selectedAccount}
+                  cards={cards}
+                  onComplete={refreshSelected}
+                  toast={toast}
+                />
+              </div>
+              <div className="mt-24">
                 <TransactionHistory
                   account={selectedAccount}
                   refreshKey={refreshKey}
                 />
               </div>
-            </div>
-          </div>
-        );
-
-      case 'concurrency':
-        return (
-          <div className="content-grid">
-            <div>
-              <AccountList
-                accounts={accounts}
-                selectedId={selectedAccount?.id}
-                onSelect={handleAccountSelect}
-              />
-            </div>
-            <div>
-              <ConcurrencyDemo
-                account={selectedAccount}
-                cards={cards}
-                onComplete={refreshSelected}
-                toast={toast}
-              />
             </div>
           </div>
         );

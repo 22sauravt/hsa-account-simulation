@@ -190,7 +190,19 @@ This approach was chosen over more complex alternatives (ML classification, merc
 **Both.** The client provides immediate UX feedback (e.g., "❌ Non-qualified — will be declined" hint before submission), but all authorization decisions are server-side. The client is untrusted — a malicious request would still be rejected.
 
 ### Single Active Card Per Account
-**Design choice** to simplify the demo. One active card at a time — must freeze/cancel before issuing a new one. In production, HSA plans typically issue one debit card anyway, so this constraint is realistic.
+**Chose one active card at a time** because HSA providers (Optum, Fidelity, HealthEquity) typically issue a single debit card per account. This also reduces fraud surface area — with one active card, unauthorized transactions are easier to detect and the account holder can freeze or cancel immediately without ambiguity about which card was compromised. A new card can be issued after cancelling the previous one.
 
 ### Monorepo Structure
 **Chose a single repo** with `server/` and `client/` directories. For a take-home assignment, this is simpler to review. A root `package.json` with `concurrently` starts both with `npm run dev`. In production, these would likely be separate deployments.
+
+---
+
+## Future Improvements
+
+- **Dependent cards** — Allow account holders to issue additional debit cards for dependents (spouse, children). This is common with real HSA providers but was intentionally omitted since the assignment specifies each account "may have a virtual debit card" (singular). The data model already supports multiple cards per account, so this would primarily be a UI and business logic change.
+- **Annual contribution limits** — Enforce IRS annual contribution caps ($4,150 individual / $8,300 family for 2024). Currently deposits are unlimited.
+- **Receipt uploads** — Allow users to attach receipts or EOBs to transactions for tax documentation and audit trails.
+- **MCC-based classification** — Replace the category dropdown with real Merchant Category Code (MCC) lookup from card networks for more accurate qualified expense determination.
+- **PostgreSQL migration** — For production multi-server deployments, migrate from SQLite to PostgreSQL with `SELECT ... FOR UPDATE` row-level locking for true concurrent write support.
+- **Authentication** — Add user login with session management. Currently the app has no auth since it's a simulation.
+- **Email verification** — Send a confirmation email on account creation and require the user to verify before the account becomes active. Currently the system validates email format but does not verify ownership.

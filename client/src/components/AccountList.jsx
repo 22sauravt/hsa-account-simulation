@@ -1,4 +1,4 @@
-export default function AccountList({ accounts, selectedId, onSelect }) {
+export default function AccountList({ accounts, selectedId, onSelect, onDelete }) {
   if (accounts.length === 0) {
     return (
       <div className="empty-state">
@@ -8,6 +8,14 @@ export default function AccountList({ accounts, selectedId, onSelect }) {
       </div>
     );
   }
+
+  const handleDelete = async (e, account) => {
+    e.stopPropagation();
+    if (!confirm(`Delete ${account.first_name} ${account.last_name}'s account? This will remove all cards and transactions.`)) {
+      return;
+    }
+    if (onDelete) onDelete(account.id);
+  };
 
   return (
     <div>
@@ -28,8 +36,17 @@ export default function AccountList({ accounts, selectedId, onSelect }) {
               <div className="account-email">{account.email}</div>
             </div>
           </div>
-          <div className="account-balance">
-            ${account.balance.toFixed(2)}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div className="account-balance">
+              ${account.balance.toFixed(2)}
+            </div>
+            <button
+              className="btn-icon-delete"
+              onClick={(e) => handleDelete(e, account)}
+              title="Delete account"
+            >
+              ✕
+            </button>
           </div>
         </div>
       ))}

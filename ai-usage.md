@@ -25,7 +25,7 @@ I used AI to create a suite of tests. I gave it a prompt of how to create a sing
 ### 1. Initial Design + Code
 **Prompt:** Context provided was the full assignment requirements, and I reinforced that this assignemnt must be completed in 24 hours - an MVP should be built hitting all requirements. I asked the AI to build a design plan and then architecture.md. I reviewed architecture.md and asked it to follow it strictly to build the first version of the codebase. 
 
-### 3. UI Design System
+### 2. UI Design System
 **Prompt:** (Part of the approved plan execution)
 
 **Workflow:** AI created a comprehensive CSS design system with dark mode, glassmorphism, and micro-animations. I reviewed the visual output in-browser and confirmed it met the premium design standard — dark navy backgrounds, teal/cyan gradient accents, glass-effect cards with subtle borders, and smooth transitions.
