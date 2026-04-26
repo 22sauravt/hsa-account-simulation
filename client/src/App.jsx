@@ -6,6 +6,7 @@ import CardManager from './components/CardManager';
 import TransactionForm from './components/TransactionForm';
 import TransactionHistory from './components/TransactionHistory';
 import ConcurrencyDemo from './components/ConcurrencyDemo';
+import SpendingChart from './components/SpendingChart';
 import { ToastContainer, useToast } from './components/Toast';
 
 const TABS = [
@@ -146,6 +147,11 @@ export default function App() {
                   <div style={{ marginTop: '16px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                     Account ID: <code style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{selectedAccount.id}</code>
                   </div>
+                </div>
+              )}
+              {selectedAccount && (
+                <div className="mt-24">
+                  <SpendingChart account={selectedAccount} />
                 </div>
               )}
             </div>
