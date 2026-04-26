@@ -1,0 +1,30 @@
+# System Requirements
+
+# ── Runtime ──────────────────────────────────────────────
+Node.js >= 20.0.0          # Required — JavaScript runtime (https://nodejs.org)
+npm >= 9.0.0               # Included with Node.js
+
+# ── Backend Dependencies (server/package.json) ──────────
+express@^4.21.0            # Web framework / REST API
+better-sqlite3@^11.7.0     # SQLite driver (native, synchronous)
+cors@^2.8.5                # Cross-origin resource sharing middleware
+uuid@^10.0.0               # UUID generation for primary keys
+
+# ── Frontend Dependencies (client/package.json) ─────────
+react@^19.2.5              # UI component library
+react-dom@^19.2.5          # React DOM renderer
+vite@^8.0.10               # Build tool / dev server
+@vitejs/plugin-react@^6.0.1 # React plugin for Vite
+
+# ── Dev / Build Dependencies ────────────────────────────
+concurrently@^9.1.0        # Runs server + client in parallel
+
+# ── System Libraries (auto-installed by npm) ────────────
+# better-sqlite3 requires a C++ compiler to build its native bindings.
+# On macOS: Xcode Command Line Tools (xcode-select --install)
+# On Ubuntu/Debian: build-essential, python3
+# On Windows: windows-build-tools or Visual Studio Build Tools
+
+# ── No External Services Required ───────────────────────
+# SQLite runs embedded — no database server to install.
+# No API keys, no Docker, no cloud services.
