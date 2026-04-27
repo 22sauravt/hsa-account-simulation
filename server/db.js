@@ -1,7 +1,11 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
 const DB_PATH = process.env.HSA_DB_PATH || path.join(__dirname, 'data', 'hsa.db');
+
+// Ensure the data directory exists
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 let db;
 

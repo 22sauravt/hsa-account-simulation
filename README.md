@@ -5,11 +5,12 @@ A full-stack Health Savings Account (HSA) platform that allows users to create a
 ## Quick Start
 
 ```bash
-# Prerequisites: Node.js 20+ (via nvm)
-nvm use v20 # or v24
+# Prerequisites: Node.js 20+
+node --version   # Verify ≥ 20.0.0
 
 # Install all dependencies
-npm run install:all
+npm install              # Root deps (concurrently)
+npm run install:all      # Server + client deps
 
 # Start the app (backend + frontend)
 npm run dev
@@ -17,15 +18,19 @@ npm run dev
 
 Then open **http://localhost:5173** in your browser.
 
+> **First time?** See [installation.md](./installation.md) for detailed setup instructions and troubleshooting.
+
 ## Features
 
-- **Create HSA Accounts** — Set up accounts with name and email
+- **Create HSA Accounts** — Set up accounts with name and email (with email validation and Quick Fill for testing)
 - **Deposit Funds** — Add funds with quick-amount buttons ($50–$1000)
-- **Virtual Debit Cards** — Issue, freeze, cancel, and unfreeze cards with a visual card UI
-- **Process Transactions** — Simulated purchases against categorized merchants
+- **Virtual Debit Cards** — Issue, freeze, unfreeze, and cancel cards with a visual card UI
+- **Process Transactions** — Purchases validated against merchant categories
   - ✅ Qualified medical expenses (pharmacy, hospital, dentist, etc.) → Approved
   - ❌ Non-qualified (restaurant, electronics, etc.) → Declined
-- **Concurrency Demo** — Fire multiple simultaneous transactions to prove the balance never goes negative
+- **Batch Payments** — Process multiple transactions simultaneously to demonstrate concurrency safety
+- **Spending Breakdown** — Donut chart showing spending by medical category
+- **Account Management** — Delete accounts with cascading cleanup of cards and transactions
 
 ## Tech Stack
 
