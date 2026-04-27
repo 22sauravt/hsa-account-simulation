@@ -5,8 +5,9 @@ A full-stack Health Savings Account (HSA) platform that allows users to create a
 ## Quick Start
 
 ```bash
-# Prerequisites: Node.js 20+
-node --version   # Verify ≥ 20.0.0
+# Prerequisites: Node.js (v24.14.0 recommended, v20+ should also work)
+nvm install       # Reads .nvmrc → installs v24.14.0
+nvm use           # Switches to v24.14.0
 
 # Install all dependencies
 npm install              # Root deps (concurrently)

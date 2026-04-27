@@ -10,33 +10,64 @@ This guide walks you through setting up and running the HSA Account Simulation f
 
 | Requirement | Version | Check |
 |:------------|:--------|:------|
-| **Node.js** | ≥ 20.0.0 | `node --version` |
+| **Node.js** | v24.14.0 recommended (v20+ should also work) | `node --version` |
 | **npm** | ≥ 9.0.0 (included with Node) | `npm --version` |
 | **C++ compiler** | Any (for `better-sqlite3` native build) | See below |
 
+> **Note:** This project includes an `.nvmrc` file pinned to `v24.14.0`. If you use nvm, just run `nvm install && nvm use` and it will automatically use the correct version.
+
 ### Installing Node.js
+
+#### macOS
 
 **Option A — nvm (recommended):**
 ```bash
-# Install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-
 # Restart your terminal, then:
-nvm install 20
-nvm use 20
+nvm install    # Reads .nvmrc → installs v24.14.0
+nvm use
 ```
 
 **Option B — Direct download:**
+Download from [https://nodejs.org](https://nodejs.org) (LTS or Current).
 
-Download from [https://nodejs.org](https://nodejs.org) (LTS version).
+#### Windows
+
+**Option A — Direct download (recommended):**
+1. Go to [https://nodejs.org](https://nodejs.org)
+2. Download the Windows installer (`.msi`) — LTS or Current
+3. Run the installer, accept defaults (check "Automatically install necessary tools" if prompted)
+4. Open a **new** PowerShell or Command Prompt and verify:
+```powershell
+node --version
+npm --version
+```
+
+**Option B — nvm-windows:**
+1. Download `nvm-setup.exe` from [nvm-windows releases](https://github.com/coreybutler/nvm-windows/releases)
+2. Run the installer
+3. Open a new terminal:
+```powershell
+nvm install 24.14.0
+nvm use 24.14.0
+```
+
+#### Linux (Ubuntu/Debian)
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.bashrc
+nvm install    # Reads .nvmrc
+nvm use
+```
 
 ### C++ Compiler (for better-sqlite3)
 
 `better-sqlite3` compiles native C++ bindings during `npm install`. Most systems already have a compiler:
 
 - **macOS:** Run `xcode-select --install` if you haven't already.
+- **Windows:** The Node.js installer can install build tools automatically. If you skipped that, install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) (select "Desktop development with C++").
 - **Ubuntu/Debian:** `sudo apt-get install build-essential python3`
-- **Windows:** Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or run `npm install -g windows-build-tools`
 
 ---
 
